@@ -101,6 +101,7 @@ $("add").onclick=function(){handle($("man").value);$("man").value=""};
 $("list").onclick=function(e){var i=e.target.getAttribute&&e.target.getAttribute("data-i");if(i!==null&&i!==undefined){e.preventDefault();codes.splice(+i,1);save();render()}};
 $("reset").onclick=function(){if(confirm("¿Borrar todo el conteo?")){codes=[];last="";save();render()}};
 render();
+if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(function(){})}
 </script>
 </body>
 </html>
