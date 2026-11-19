@@ -82,13 +82,19 @@ async function tick(){
   }
   setTimeout(tick,150);
 }
+function stopCam(){
+  if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}
+  $("v").srcObject=null;$("start").textContent="Iniciar cámara";$("msg").textContent="Cámara apagada";
+}
+document.addEventListener("visibilitychange",function(){if(document.hidden&&stream)stopCam()});
 $("start").onclick=async function(){
+  if(stream){stopCam();return}
   $("err").textContent="";
   try{
     stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false});
     $("v").srcObject=stream;await $("v").play();
     if("BarcodeDetector" in window){try{detector=new BarcodeDetector({formats:["qr_code"]})}catch(e){detector=null}}
-    $("msg").textContent="Escaneando…";$("start").textContent="Cámara activa";tick();
+    $("msg").textContent="Escaneando…";$("start").textContent="Apagar cámara";tick();
   }catch(e){$("err").textContent="No se pudo abrir la cámara. Da permiso en el navegador o abre este enlace directo en Chrome/Safari (no dentro de otra app)."}
 };
 $("add").onclick=function(){handle($("man").value);$("man").value=""};
