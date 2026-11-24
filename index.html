@@ -37,6 +37,7 @@ li b{color:var(--mut);min-width:28px}li span{flex:1}li a{color:var(--bad);font-w
   <div class="cam" id="cam"><video id="v" playsinline muted></video><div class="msg" id="msg">Toca “Iniciar cámara”</div></div>
   <div class="row"><button id="start">Iniciar cámara</button><button id="torch" style="display:none">🔦 Linterna</button></div>
   <p class="err" id="err"></p>
+  <p style="font-size:11px;color:var(--mut);margin:4px 0 0">v3</p>
   <div class="row"><input id="man" placeholder="Código manual (si no escanea)"><button id="add" style="flex:0 0 auto">Agregar</button></div>
 </div>
 
@@ -106,14 +107,14 @@ $("start").onclick=async function(){
     $("v").srcObject=stream;await $("v").play();
     if("BarcodeDetector" in window){try{detector=new BarcodeDetector({formats:["qr_code"]})}catch(e){detector=null}}
     track=stream.getVideoTracks()[0];
+    $("torch").style.display="block";
     try{var caps=track.getCapabilities?track.getCapabilities():{};
-      if(caps.focusMode&&caps.focusMode.indexOf("continuous")>-1)await track.applyConstraints({advanced:[{focusMode:"continuous"}]});
-      if(caps.torch)$("torch").style.display="block";}catch(e){}
+      if(caps.focusMode&&caps.focusMode.indexOf("continuous")>-1)await track.applyConstraints({advanced:[{focusMode:"continuous"}]});}catch(e){}
     $("msg").textContent="Escaneando…";$("start").textContent="Apagar cámara";tick();
   }catch(e){$("err").textContent="No se pudo abrir la cámara. Da permiso en el navegador o abre este enlace directo en Chrome/Safari (no dentro de otra app)."}
 };
 $("torch").onclick=async function(){
-  try{torchOn=!torchOn;await track.applyConstraints({advanced:[{torch:torchOn}]});$("torch").textContent=torchOn?"🔦 Apagar luz":"🔦 Linterna"}catch(e){torchOn=false}
+  try{torchOn=!torchOn;await track.applyConstraints({advanced:[{torch:torchOn}]});$("torch").textContent=torchOn?"🔦 Apagar luz":"🔦 Linterna";$("err").textContent=""}catch(e){torchOn=false;$("err").textContent="Tu teléfono o navegador no permite encender la linterna desde la página. Usa la linterna del teléfono desde el panel rápido."}
 };
 $("add").onclick=function(){handle($("man").value);$("man").value=""};
 $("list").onclick=function(e){var i=e.target.getAttribute&&e.target.getAttribute("data-i");if(i!==null&&i!==undefined){e.preventDefault();codes.splice(+i,1);save();render()}};
